@@ -15,7 +15,8 @@ export default function Dashboard() {
 
   const fetchDashboard = async () => {
     try {
-      const response = await axios.get('/api/dashboard');
+      const API_URL = import.meta.env.VITE_API_URL || '';
+      const response = await axios.get(`${API_URL}/api/dashboard`);
       if (response.data.success) {
         setDashboardData(response.data);
       }

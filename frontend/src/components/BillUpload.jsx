@@ -14,7 +14,7 @@ export default function BillUpload({ onUploadSuccess }) {
       setSelectedFile(file);
       setError(null);
       setResult(null);
-      
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result);
@@ -41,7 +41,8 @@ export default function BillUpload({ onUploadSuccess }) {
     formData.append('file', selectedFile);
 
     try {
-      const response = await axios.post('/api/upload-bill', formData, {
+      const API_URL = import.meta.env.VITE_API_URL || '';
+      const response = await axios.post(`${API_URL}/api/upload-bill`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -66,7 +67,7 @@ export default function BillUpload({ onUploadSuccess }) {
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">Upload Bill/Receipt</h2>
-        
+
         <div className="space-y-4">
           <div className="flex items-center justify-center w-full">
             <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">

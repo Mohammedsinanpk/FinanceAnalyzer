@@ -20,7 +20,8 @@ export default function ChatAssistant() {
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/chat', {
+      const API_URL = import.meta.env.VITE_API_URL || '';
+      const response = await axios.post(`${API_URL}/api/chat`, {
         question: userMessage
       });
 
@@ -68,11 +69,10 @@ export default function ChatAssistant() {
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[80%] p-3 rounded-lg ${
-                message.role === 'user'
+              className={`max-w-[80%] p-3 rounded-lg ${message.role === 'user'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-800'
-              }`}
+                }`}
             >
               <p className="whitespace-pre-wrap">{message.content}</p>
             </div>
@@ -103,7 +103,7 @@ export default function ChatAssistant() {
             </button>
           ))}
         </div>
-        
+
         <div className="flex space-x-2">
           <input
             type="text"
