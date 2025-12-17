@@ -114,7 +114,7 @@ export default function BillUpload({ onUploadSuccess }) {
                 <p><strong>Date:</strong> {result.date}</p>
                 <p><strong>Merchant:</strong> {result.merchant}</p>
                 <p><strong>Category:</strong> {result.category}</p>
-                <p><strong>Total Amount:</strong> ${result.total_amount.toFixed(2)}</p>
+                <p><strong>Total Amount:</strong> ${(result.total_amount || result.amount).toFixed(2)}</p>
                 {result.items && result.items.length > 0 && (
                   <div>
                     <strong>Items:</strong>
@@ -125,6 +125,47 @@ export default function BillUpload({ onUploadSuccess }) {
                     </ul>
                   </div>
                 )}
+              </div>
+
+              <div className="mt-4 flex space-x-3">
+                <button
+                  onClick={async () => {
+                    try {
+                      const API_URL = import.meta.env.VITE_API_URL || '';
+                      const transactionData = {
+                        date: result.date,
+                        merchant: result.merchant,
+                        category: result.category,
+                        amount: result.total_amount || result.amount,
+                        type: 'expense',
+                        items: result.items
+                      };
+                      const response = await axios.post(`${API_URL}/api/transactions`, transactionData);
+                      if (response.data.success) {
+                        alert('Transaction saved successfully!');
+                        setResult(null);
+                        setSelectedFile(null);
+                        setPreview(null);
+                        if (onUploadSuccess) onUploadSuccess();
+                      }
+                    } catch (err) {
+                      alert('Failed to save transaction: ' + (err.response?.data?.detail || err.message));
+                    }
+                  }}
+                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                >
+                  Save as Expense
+                </button>
+                <button
+                  onClick={() => {
+                    setResult(null);
+                    setSelectedFile(null);
+                    setPreview(null);
+                  }}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           )}
