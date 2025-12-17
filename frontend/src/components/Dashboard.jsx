@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { Pie, Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { Pie, Bar, Line } from 'react-chartjs-2';
 import AddTransactionModal from './AddTransactionModal';
 
-ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAddExpense, setShowAddExpense] = useState(false);
   const [showAddIncome, setShowAddIncome] = useState(false);
+  const [chartMode, setChartMode] = useState('expenses');
 
   useEffect(() => {
     fetchDashboard();
@@ -112,17 +113,50 @@ export default function Dashboard() {
     ],
   };
 
-  const recentTransactions = transactions.slice().reverse().slice(0, 7);
-  const transactionBarData = {
-    labels: recentTransactions.map((t, i) => `#${recentTransactions.length - i}`),
+  const processChartData = (data) => {
+    // Group by date
+    const grouped = data.reduce((acc, t) => {
+      const date = new Date(t.date || t.timestamp).toLocaleDateString();
+      acc[date] = (acc[date] || 0) + (t.amount || t.total_amount);
+      return acc;
+    }, {});
+
+    // Convert to array and sort by date
+    return Object.entries(grouped)
+      .map(([date, amount]) => ({ date, amount }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .slice(-7); // Get last 7 days
+  };
+
+  const groupedTransactions = processChartData(transactions);
+  const transactionChartData = {
+    labels: groupedTransactions.map(t => t.date),
     datasets: [
       {
-        label: 'Recent Transactions',
-        data: recentTransactions.map(t => t.amount), // Updated from t.total_amount
-        backgroundColor: recentTransactions.map(t => t.type === 'income' ? 'rgba(75, 192, 192, 0.8)' : 'rgba(255, 99, 132, 0.8)'),
+        label: 'Daily Transactions',
+        data: groupedTransactions.map(t => t.amount),
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+        tension: 0.1,
       },
     ],
   };
+
+  const groupedExpenses = processChartData(transactions.filter(t => t.type === 'expense'));
+  const expenseChartData = {
+    labels: groupedExpenses.map(t => t.date),
+    datasets: [
+      {
+        label: 'Daily Expenses',
+        data: groupedExpenses.map(t => t.amount),
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        tension: 0.1,
+      },
+    ],
+  };
+
+  const chartData = chartMode === 'expenses' ? expenseChartData : transactionChartData;
 
   return (
     <div className="space-y-6">
@@ -153,7 +187,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-sm font-medium text-gray-500 mb-2">Total Spent</h3>
-          <p className="text-3xl font-bold text-gray-900">${insights.total_spent}</p>
+          <p className="text-3xl font-bold text-gray-900">₹{insights.total_spent}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-sm font-medium text-gray-500 mb-2">Transactions</h3>
@@ -198,11 +232,40 @@ export default function Dashboard() {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Transactions</h3>
-          {recentTransactions.length > 0 ? (
-            <Bar data={transactionBarData} options={{ maintainAspectRatio: true, scales: { y: { beginAtZero: true } } }} />
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">
+              {chartMode === 'expenses' ? 'Recent Expenses' : 'Recent Transactions'}
+            </h3>
+            <div className="flex space-x-2 bg-gray-100 p-1 rounded-lg">
+              <button
+                onClick={() => setChartMode('expenses')}
+                className={`px-3 py-1 text-sm rounded-md transition-colors ${chartMode === 'expenses'
+                  ? 'bg-white text-gray-800 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+                  }`}
+              >
+                Expenses
+              </button>
+              <button
+                onClick={() => setChartMode('all')}
+                className={`px-3 py-1 text-sm rounded-md transition-colors ${chartMode === 'all'
+                  ? 'bg-white text-gray-800 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+                  }`}
+              >
+                All
+              </button>
+            </div>
+          </div>
+          {(chartMode === 'expenses' ? groupedExpenses : groupedTransactions).length > 0 ? (
+            <Line
+              data={chartData}
+              options={{ maintainAspectRatio: true, scales: { y: { beginAtZero: true } } }}
+            />
           ) : (
-            <p className="text-gray-500 text-center py-8">No transactions yet</p>
+            <p className="text-gray-500 text-center py-8">
+              No {chartMode === 'expenses' ? 'expenses' : 'transactions'} yet
+            </p>
           )}
         </div>
       </div>
@@ -259,6 +322,6 @@ export default function Dashboard() {
         onSuccess={handleTransactionSuccess}
         type="income"
       />
-    </div>
+    </div >
   );
 }

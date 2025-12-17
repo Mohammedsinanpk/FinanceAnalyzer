@@ -108,7 +108,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, type =
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Amount ($)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Amount (₹)</label>
                         <input
                             type="number"
                             name="amount"
@@ -140,8 +140,8 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, type =
                             type="submit"
                             disabled={loading}
                             className={`px-6 py-2 text-white rounded-md transition-colors ${type === 'income'
-                                    ? 'bg-green-600 hover:bg-green-700'
-                                    : 'bg-red-600 hover:bg-red-700'
+                                ? 'bg-green-600 hover:bg-green-700'
+                                : 'bg-red-600 hover:bg-red-700'
                                 } disabled:bg-gray-400 disabled:cursor-not-allowed`}
                         >
                             {loading ? 'Saving...' : 'Save Transaction'}
