@@ -65,12 +65,13 @@ export default function BillUpload({ onUploadSuccess }) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Upload Bill/Receipt</h2>
+      <div className="bg-white p-6 sm:p-8 rounded-[24px] shadow-lg shadow-gray-200/50 border border-gray-100 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-full blur-2xl opacity-60 -mr-10 -mt-10"></div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 relative z-10">Upload Bill/Receipt</h2>
 
-        <div className="space-y-4">
+        <div className="space-y-6 relative z-10">
           <div className="flex items-center justify-center w-full">
-            <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+            <label className="flex flex-col items-center justify-center w-full h-48 sm:h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
               {preview ? (
                 <img src={preview} alt="Preview" className="h-full object-contain" />
               ) : (
@@ -127,7 +128,7 @@ export default function BillUpload({ onUploadSuccess }) {
                 )}
               </div>
 
-              <div className="mt-4 flex space-x-3">
+              <div className="mt-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 <button
                   onClick={async () => {
                     try {
@@ -152,7 +153,7 @@ export default function BillUpload({ onUploadSuccess }) {
                       alert('Failed to save transaction: ' + (err.response?.data?.detail || err.message));
                     }
                   }}
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                  className="w-full sm:w-auto px-4 py-3 sm:py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-center font-medium"
                 >
                   Save as Expense
                 </button>
@@ -162,7 +163,7 @@ export default function BillUpload({ onUploadSuccess }) {
                     setSelectedFile(null);
                     setPreview(null);
                   }}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
+                  className="w-full sm:w-auto px-4 py-3 sm:py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-center font-medium"
                 >
                   Cancel
                 </button>

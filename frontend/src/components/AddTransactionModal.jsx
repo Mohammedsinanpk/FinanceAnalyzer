@@ -53,34 +53,34 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, type =
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                    <h2 className="text-xl font-semibold text-gray-800">
+        <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                    <h2 className="text-xl font-bold text-gray-900">
                         Add {type === 'income' ? 'Income' : 'Expense'}
                     </h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button onClick={onClose} className="p-2 bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <form onSubmit={handleSubmit} className="p-8 space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Date</label>
                         <input
                             type="date"
                             name="date"
                             value={formData.date}
                             onChange={handleChange}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-gray-800"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
                             {type === 'income' ? 'Source' : 'Merchant/Description'}
                         </label>
                         <input
@@ -90,12 +90,12 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, type =
                             onChange={handleChange}
                             placeholder={type === 'income' ? 'e.g., Salary, Freelance' : 'e.g., Walmart, Uber'}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-gray-800 placeholder-gray-400"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
                         <input
                             type="text"
                             name="category"
@@ -103,46 +103,50 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, type =
                             onChange={handleChange}
                             placeholder={type === 'income' ? 'e.g., Salary' : 'e.g., Groceries, Transport'}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-gray-800 placeholder-gray-400"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Amount (₹)</label>
-                        <input
-                            type="number"
-                            name="amount"
-                            value={formData.amount}
-                            onChange={handleChange}
-                            placeholder="0.00"
-                            step="0.01"
-                            min="0"
-                            required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Amount (₹)</label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-3.5 text-gray-500 font-medium">₹</span>
+                            <input
+                                type="number"
+                                name="amount"
+                                value={formData.amount}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                step="0.01"
+                                min="0"
+                                required
+                                className="w-full pl-8 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-gray-800 text-lg font-medium placeholder-gray-400"
+                            />
+                        </div>
                     </div>
 
                     {error && (
-                        <div className="text-red-600 text-sm bg-red-50 p-2 rounded">
+                        <div className="flex items-center p-3 text-red-600 text-sm bg-red-50 rounded-xl">
+                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                             {error}
                         </div>
                     )}
 
-                    <div className="flex justify-end pt-2">
+                    <div className="flex justify-end pt-4 gap-3">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="mr-3 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                            className="px-6 py-3 text-gray-600 font-medium bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-all"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className={`px-6 py-2 text-white rounded-md transition-colors ${type === 'income'
-                                ? 'bg-green-600 hover:bg-green-700'
-                                : 'bg-red-600 hover:bg-red-700'
-                                } disabled:bg-gray-400 disabled:cursor-not-allowed`}
+                            className={`px-8 py-3 text-white font-bold rounded-xl shadow-lg transform transition-all hover:-translate-y-0.5 ${type === 'income'
+                                ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200'
+                                : 'bg-red-600 hover:bg-red-700 shadow-red-200'
+                                } disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none`}
                         >
                             {loading ? 'Saving...' : 'Save Transaction'}
                         </button>
