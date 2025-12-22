@@ -3,14 +3,24 @@ import Dashboard from './components/Dashboard';
 import BillUpload from './components/BillUpload';
 import ChatAssistant from './components/ChatAssistant';
 import TransactionsPage from './components/TransactionsPage';
+import AddTransactionModal from './components/AddTransactionModal';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showAddIncome, setShowAddIncome] = useState(false);
+  const [showAddExpense, setShowAddExpense] = useState(false);
 
   const handleUploadSuccess = () => {
     setRefreshKey(prev => prev + 1);
     setActiveTab('dashboard');
+  };
+
+  const handleAddSuccess = () => {
+    setRefreshKey(prev => prev + 1);
+    // If we're not on dashboard, maybe switch? Or just refresh data if we return.
+    // For now, let's keep user on current tab but refresh key ensures dashboard updates when visited.
   };
 
   return (
@@ -112,20 +122,69 @@ function App() {
               <span className="text-[10px] font-bold">Home</span>
             </button>
 
-            <button
-              onClick={() => setActiveTab('upload')}
-              className={`flex flex-col items-center p-2 rounded-xl transition-all w-20 active:scale-95 ${activeTab === 'upload' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
-            >
-              <div className="relative">
+            <div className="relative">
+              {isMenuOpen && (
+                <div className="absolute bottom-full mb-4 left-1/2 transform -translate-x-1/2 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 min-w-[160px] animate-fade-in-up flex flex-col gap-1 z-50">
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setShowAddIncome(true);
+                    }}
+                    className="flex items-center w-full px-4 py-3 text-left hover:bg-green-50 rounded-xl transition-colors text-gray-700 hover:text-green-700 group"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center mr-3 group-hover:bg-green-200 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+                    </div>
+                    <span className="font-semibold text-sm">Income</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setShowAddExpense(true);
+                    }}
+                    className="flex items-center w-full px-4 py-3 text-left hover:bg-red-50 rounded-xl transition-colors text-gray-700 hover:text-red-700 group"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center mr-3 group-hover:bg-red-200 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" /></svg>
+                    </div>
+                    <span className="font-semibold text-sm">Expense</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setActiveTab('upload');
+                    }}
+                    className="flex items-center w-full px-4 py-3 text-left hover:bg-blue-50 rounded-xl transition-colors text-gray-700 hover:text-blue-700 group"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3 group-hover:bg-blue-200 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    </div>
+                    <span className="font-semibold text-sm">Scan Bill</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Backdrop for menu */}
+              {isMenuOpen && (
+                <div
+                  className="fixed inset-0 bg-black/20 z-40"
+                  onClick={() => setIsMenuOpen(false)}
+                ></div>
+              )}
+
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className={`transform transition-all duration-300 active:scale-90 ${isMenuOpen ? 'rotate-45' : ''}`}
+              >
                 <div className="absolute -inset-4 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full opacity-0"></div>
                 <div className={`p-3 -mt-6 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full shadow-lg shadow-blue-300 border-4 border-gray-50 flex items-center justify-center`}>
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                   </svg>
                 </div>
-              </div>
-              <span className="text-[10px] font-bold mt-1 text-gray-500">Add</span>
-            </button>
+              </button>
+              <span className="text-[10px] font-bold mt-1 text-gray-500 block text-center">Add</span>
+            </div>
 
             <button
               onClick={() => setActiveTab('chat')}
@@ -141,6 +200,19 @@ function App() {
           </div>
         </div>
       </div>
+
+      <AddTransactionModal
+        isOpen={showAddExpense}
+        onClose={() => setShowAddExpense(false)}
+        onSuccess={handleAddSuccess}
+        type="expense"
+      />
+      <AddTransactionModal
+        isOpen={showAddIncome}
+        onClose={() => setShowAddIncome(false)}
+        onSuccess={handleAddSuccess}
+        type="income"
+      />
     </div>
   );
 }

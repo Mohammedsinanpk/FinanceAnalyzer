@@ -2,15 +2,13 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { Pie, Line } from 'react-chartjs-2';
-import AddTransactionModal from './AddTransactionModal';
+
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 export default function Dashboard({ onNavigate }) {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showAddExpense, setShowAddExpense] = useState(false);
-  const [showAddIncome, setShowAddIncome] = useState(false);
   const [chartMode, setChartMode] = useState('expenses');
 
   useEffect(() => {
@@ -31,9 +29,7 @@ export default function Dashboard({ onNavigate }) {
     }
   };
 
-  const handleTransactionSuccess = () => {
-    fetchDashboard();
-  };
+
 
   if (loading) {
     return (
@@ -58,33 +54,9 @@ export default function Dashboard({ onNavigate }) {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome to your Finance Analyzer</h2>
           <p className="text-gray-500 mb-8">Start tracking your finances by adding your first transaction.</p>
           <div className="space-y-3">
-            <button
-              onClick={() => setShowAddIncome(true)}
-              className="w-full py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition duration-200 font-medium shadow-lg shadow-indigo-200"
-            >
-              Add Income
-            </button>
-            <button
-              onClick={() => setShowAddExpense(true)}
-              className="w-full py-3 bg-white text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition duration-200 font-medium"
-            >
-              Add Expense
-            </button>
+            <p className="text-gray-500 text-sm">Use the <span className="font-bold text-indigo-600">+</span> button in the bottom bar to add your first transaction!</p>
           </div>
         </div>
-
-        <AddTransactionModal
-          isOpen={showAddExpense}
-          onClose={() => setShowAddExpense(false)}
-          onSuccess={handleTransactionSuccess}
-          type="expense"
-        />
-        <AddTransactionModal
-          isOpen={showAddIncome}
-          onClose={() => setShowAddIncome(false)}
-          onSuccess={handleTransactionSuccess}
-          type="income"
-        />
       </div>
     );
   }
@@ -193,30 +165,6 @@ export default function Dashboard({ onNavigate }) {
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Financial Overview</h1>
           <p className="text-sm text-gray-500 mt-0.5">{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
-        <div className="flex w-full sm:w-auto space-x-3 bg-white p-1 rounded-xl shadow-sm border border-gray-100 sm:bg-transparent sm:shadow-none sm:border-0 sm:p-0">
-          <button
-            onClick={() => setShowAddIncome(true)}
-            className="flex-1 sm:flex-none justify-center items-center px-4 py-2.5 bg-green-50 text-green-700 rounded-lg sm:bg-white sm:border sm:border-gray-200 sm:text-gray-700 sm:shadow-sm sm:hover:bg-gray-50 transition-all font-medium group active:scale-95"
-          >
-            <div className="flex items-center justify-center">
-              <div className="w-5 h-5 rounded-full bg-green-200 flex items-center justify-center mr-2 text-green-700 sm:bg-green-100 sm:text-green-600">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" /></svg>
-              </div>
-              Income
-            </div>
-          </button>
-          <button
-            onClick={() => setShowAddExpense(true)}
-            className="flex-1 sm:flex-none justify-center items-center px-4 py-2.5 bg-gray-900 text-white rounded-lg shadow-md hover:bg-gray-800 transition-all font-medium group active:scale-95"
-          >
-            <div className="flex items-center justify-center">
-              <div className="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center mr-2 text-white group-hover:bg-gray-600 transition-colors">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" /></svg>
-              </div>
-              Expense
-            </div>
-          </button>
-        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
@@ -301,7 +249,7 @@ export default function Dashboard({ onNavigate }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* Left Column: Chart & Transactions */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-3 space-y-6">
 
           {/* Main Chart */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 transition-all hover:shadow-md">
@@ -354,80 +302,11 @@ export default function Dashboard({ onNavigate }) {
                   </div>
                 </div>
               ))}
-              {transactions.length === 0 && (
-                <div className="text-center py-8">
-                  <p className="text-gray-400 mb-2">No recent transactions</p>
-                  <button onClick={() => setShowAddExpense(true)} className="text-indigo-600 text-sm font-medium hover:underline">Add one now</button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
 
-        {/* Right Column: Smart Insights */}
-        <div className="lg:col-span-1 space-y-6">
-          <div className="bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
-            {/* Decorative shapes */}
-            <div className="absolute top-0 right-0 -mr-8 -mt-8 w-24 h-24 rounded-full bg-white opacity-10 blur-xl"></div>
-            <div className="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-white opacity-10 blur-xl"></div>
-
-            <div className="flex items-center justify-between mb-6 relative z-10">
-              <h3 className="font-bold text-lg flex items-center">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                Smart Insights
-              </h3>
-            </div>
-
-            <div className="space-y-4 relative z-10">
-              {insights.insights && insights.insights.length > 0 ? (
-                insights.insights.slice(0, 3).map((insight, idx) => (
-                  <div key={idx} className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10 text-sm leading-relaxed shadow-sm">
-                    {insight}
-                  </div>
-                ))
-              ) : (
-                <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10 text-sm shadow-sm text-center">
-                  <p className="mb-2">No insights yet.</p>
-                  <p className="opacity-80 text-xs">Keep adding transactions to let our AI analyze your habits!</p>
-                </div>
-              )}
-            </div>
-            <button className="w-full mt-6 py-2.5 bg-white text-indigo-600 text-sm font-bold rounded-xl hover:bg-gray-50 transition-colors shadow-lg">
-              Generate New Report
-            </button>
-          </div>
-
-          {/* Feature Promo */}
-          <div className="bg-gray-900 rounded-2xl p-6 text-white shadow-md border border-gray-800">
-            <div className="flex items-start">
-              <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400 mr-3">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-              </div>
-              <div>
-                <h4 className="font-bold mb-1 text-gray-100">Scan Receipts</h4>
-                <p className="text-sm text-gray-400 mb-4 leading-relaxed">Too lazy to type? Upload a picture of your bill and let us handle the rest.</p>
-                <button className="text-sm text-blue-400 hover:text-blue-300 font-medium flex items-center group">
-                  Try Bill Upload
-                  <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                </button>
-              </div>
             </div>
           </div>
         </div>
       </div>
-
-      <AddTransactionModal
-        isOpen={showAddExpense}
-        onClose={() => setShowAddExpense(false)}
-        onSuccess={handleTransactionSuccess}
-        type="expense"
-      />
-      <AddTransactionModal
-        isOpen={showAddIncome}
-        onClose={() => setShowAddIncome(false)}
-        onSuccess={handleTransactionSuccess}
-        type="income"
-      />
     </div>
   );
 }
