@@ -6,7 +6,7 @@ import AddTransactionModal from './AddTransactionModal';
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
-export default function Dashboard() {
+export default function Dashboard({ onNavigate }) {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAddExpense, setShowAddExpense] = useState(false);
@@ -331,7 +331,7 @@ export default function Dashboard() {
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 transition-all hover:shadow-md">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-bold text-gray-900">Recent Transactions</h3>
-              <button className="text-indigo-600 text-sm font-medium hover:text-indigo-700 hover:underline">View All</button>
+              <button onClick={() => onNavigate('transactions')} className="text-indigo-600 text-sm font-medium hover:text-indigo-700 hover:underline">View All</button>
             </div>
 
             <div className="space-y-1">

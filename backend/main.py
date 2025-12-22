@@ -130,6 +130,32 @@ async def add_transaction(transaction: Transaction):
         )
 
 
+@app.delete("/api/transactions/{transaction_id}")
+async def delete_transaction(transaction_id: str):
+    """Delete a transaction from Supabase"""
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Database not configured")
+
+    try:
+        # Check if transaction exists (optional, but good for returning 404)
+        # For simplicity, we just attempt to delete
+        response = (
+            supabase.table("transactions").delete().eq("id", transaction_id).execute()
+        )
+
+        # Supabase returns the deleted data. If empty, it might mean it didn't exist or failed silently (depending on RLS)
+        # but the request itself was successful.
+        return {
+            "success": True,
+            "message": "Transaction deleted successfully",
+            "data": response.data,
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error deleting transaction: {str(e)}"
+        )
+
+
 @app.get("/api/dashboard")
 async def get_dashboard_data():
     """Calculate dashboard insights from Supabase data"""

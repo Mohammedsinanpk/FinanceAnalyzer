@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Dashboard from './components/Dashboard';
 import BillUpload from './components/BillUpload';
 import ChatAssistant from './components/ChatAssistant';
+import TransactionsPage from './components/TransactionsPage';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -90,9 +91,10 @@ function App() {
         </div>
 
         <div className="mt-6">
-          {activeTab === 'dashboard' && <Dashboard key={refreshKey} />}
+          {activeTab === 'dashboard' && <Dashboard key={refreshKey} onNavigate={setActiveTab} />}
           {activeTab === 'upload' && <BillUpload onUploadSuccess={handleUploadSuccess} />}
           {activeTab === 'chat' && <ChatAssistant />}
+          {activeTab === 'transactions' && <TransactionsPage onNavigate={setActiveTab} />}
         </div>
 
         {/* Mobile Bottom Navigation */}
