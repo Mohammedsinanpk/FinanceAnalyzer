@@ -4,6 +4,7 @@ import BillUpload from './components/BillUpload';
 import ChatAssistant from './components/ChatAssistant';
 import TransactionsPage from './components/TransactionsPage';
 import AddTransactionModal from './components/AddTransactionModal';
+import LoginPage from './components/LoginPage';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -11,6 +12,40 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showAddIncome, setShowAddIncome] = useState(false);
   const [showAddExpense, setShowAddExpense] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+
+  // Check for saved session on mount
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user_session');
+    if (savedUser) {
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        setUser(parsedUser);
+        setIsAuthenticated(true);
+      } catch (e) {
+        console.error("Failed to parse user session", e);
+        localStorage.removeItem('user_session');
+      }
+    }
+  }, []);
+
+  const handleLoginSuccess = (userData) => {
+    setIsAuthenticated(true);
+    setUser(userData);
+    localStorage.setItem('user_session', JSON.stringify(userData));
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUser(null);
+    setActiveTab('dashboard');
+    localStorage.removeItem('user_session');
+  };
+
+  if (!isAuthenticated) {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+  }
 
   const handleUploadSuccess = () => {
     setRefreshKey(prev => prev + 1);
@@ -34,19 +69,25 @@ function App() {
               </svg>
               <h1 className="text-2xl font-bold text-gray-900">AI Finance Analyzer</h1>
             </div>
+            <button
+              onClick={handleLogout}
+              className="text-gray-500 hover:text-gray-700 font-medium text-sm"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </nav>
 
       {/* Mobile Top Bar */}
-      <div className="sm:hidden bg-white shadow-sm p-4 sticky top-0 z-10">
+      < div className="sm:hidden bg-white shadow-sm p-4 sticky top-0 z-10" >
         <div className="flex items-center justify-center">
           <svg className="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span className="font-bold text-gray-900 text-lg">FinAnalyser</span>
         </div>
-      </div>
+      </div >
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 sm:pb-8">
         <div className="mb-6 hidden sm:block">
@@ -213,7 +254,7 @@ function App() {
         onSuccess={handleAddSuccess}
         type="income"
       />
-    </div>
+    </div >
   );
 }
 

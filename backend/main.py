@@ -247,6 +247,41 @@ async def chat(request: ChatRequest):
         raise HTTPException(status_code=500, detail=f"Error in chat: {str(e)}")
 
 
+class UserCredentials(BaseModel):
+    email: str
+    password: str
+
+
+@app.post("/api/auth/signup")
+async def signup(credentials: UserCredentials):
+    """Sign up a new user with Supabase Auth"""
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Database not configured")
+
+    try:
+        response = supabase.auth.sign_up(
+            {"email": credentials.email, "password": credentials.password}
+        )
+        return {"success": True, "data": response}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Signup failed: {str(e)}")
+
+
+@app.post("/api/auth/login")
+async def login(credentials: UserCredentials):
+    """Log in an existing user with Supabase Auth"""
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Database not configured")
+
+    try:
+        response = supabase.auth.sign_in_with_password(
+            {"email": credentials.email, "password": credentials.password}
+        )
+        return {"success": True, "data": response}
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Login failed: {str(e)}")
+
+
 if __name__ == "__main__":
     import uvicorn
 
